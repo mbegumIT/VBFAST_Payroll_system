@@ -59,7 +59,11 @@ function calculateTotalHours(timeIn, timeOut) {
     const outDate = new Date();
     outDate.setHours(outHours, outMinutes, outSeconds);
 
-    const diffMs = outDate - inDate;
+    let diffMs = outDate - inDate;
+    // If diffMs is negative, it means that timeOut is on the next day
+    if (diffMs < 0) {
+        diffMs += 24 * 60 * 60 * 1000; // Add 24 hours
+    }
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     return `${diffHours}h ${diffMinutes}m`;
@@ -90,7 +94,7 @@ function downloadExcel() {
     const csvContent = [
         ["Employee Name", "Start Date", "Time In", "Time Out", "Total Hours", "Organization Name"],
         ...employeeData.map((data) =>
-            [data.employeeName, data.startDate, data.timeIn, data.timeOut, data.totalHours, data.organizationName].join(",")
+            [data.employeeName, data.startDate, data.timeIn, data.timeOut, data.totalHours, data.organizationName]
         ),
     ]
     .map((row) => row.join(","))
@@ -100,7 +104,9 @@ function downloadExcel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "employee_payroll.csv";
+    a.setAttribute("download", "employee_payroll.csv");
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
