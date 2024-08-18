@@ -50,22 +50,25 @@ function timeOut() {
 }
 
 function calculateTotalHours(timeIn, timeOut) {
-    const [inHours, inMinutes, inSeconds] = timeIn.split(":").map(Number);
-    const [outHours, outMinutes, outSeconds] = timeOut.split(":").map(Number);
+    const [inHours, inMinutes] = timeIn.split(":").map(part => parseInt(part));
+    const [outHours, outMinutes] = timeOut.split(":").map(part => parseInt(part));
 
     const inDate = new Date();
-    inDate.setHours(inHours, inMinutes, inSeconds);
+    inDate.setHours(inHours, inMinutes, 0, 0);
 
     const outDate = new Date();
-    outDate.setHours(outHours, outMinutes, outSeconds);
+    outDate.setHours(outHours, outMinutes, 0, 0);
 
     let diffMs = outDate - inDate;
-    // If diffMs is negative, it means that timeOut is on the next day
+
+    // If the timeOut is earlier in the day than timeIn, assume it occurred on the next day
     if (diffMs < 0) {
         diffMs += 24 * 60 * 60 * 1000; // Add 24 hours
     }
+
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
     return `${diffHours}h ${diffMinutes}m`;
 }
 
